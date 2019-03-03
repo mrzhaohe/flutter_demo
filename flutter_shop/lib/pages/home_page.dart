@@ -3,6 +3,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'dart:convert';
 import '../config/service_method.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   final Widget child;
@@ -39,13 +40,18 @@ class _HomePageState extends State<HomePage>
 
           List<Map> dataList = (data['data']['slides'] as List).cast();
           List<Map> categoryList = (data['data']['category'] as List).cast();
+          String bannerurl = data['data']['advertesPicture']['PICTURE_ADDRESS'];
+          String leaderPhone = data['data']['shopInfo']['leaderPhone'];
 
+          String leaderImage = data['data']['shopInfo']['leaderImage'];
           return Column(
             children: <Widget>[
               CustomSwiper(
                 swiperList: dataList,
               ),
-              TopNavigator(categorylist: categoryList)
+              TopNavigator(categorylist: categoryList),
+              AdBanner(banner_url: bannerurl),
+              LeaderPhone(phone: leaderPhone, image: leaderImage)
             ],
           );
         } else {
@@ -61,6 +67,7 @@ class _HomePageState extends State<HomePage>
   bool get wantKeepAlive => true;
 }
 
+///轮播
 class CustomSwiper extends StatelessWidget {
   final List swiperList;
   // Swiper({Key key, this.swiperList}) : super(key: key);
@@ -89,6 +96,7 @@ class CustomSwiper extends StatelessWidget {
   }
 }
 
+///中间分类
 class TopNavigator extends StatelessWidget {
   final List categorylist;
   TopNavigator({this.categorylist});
@@ -125,5 +133,49 @@ class TopNavigator extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+///广告
+class AdBanner extends StatelessWidget {
+  final String banner_url;
+
+  AdBanner({Key key, this.banner_url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Image.network(this.banner_url),
+    );
+  }
+}
+
+///店长
+class LeaderPhone extends StatelessWidget {
+  final String phone;
+  final String image;
+
+  LeaderPhone({Key key, this.phone, this.image}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: InkWell(
+        onTap: _dial,
+        child: Image.network(image),
+      ),
+    );
+  }
+
+  void _dial() async {
+    String url = 'tel:' + phone;
+    // url = 'https://www.jspang.com';
+    // url = 'sms:' + '13121892189';
+    print(url);
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
