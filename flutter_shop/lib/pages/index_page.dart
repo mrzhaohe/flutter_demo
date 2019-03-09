@@ -19,7 +19,12 @@ class _IndexPageState extends State<IndexPage>
 
   List<BottomNavigationBarItem> items;
   TabController _controller;
-  final List pages = [HomePage(), CategoryPage(), ShoppingPage(), MemberPage()];
+  final List<Widget> pages = [
+    HomePage(),
+    CategoryPage(),
+    ShoppingPage(),
+    MemberPage()
+  ];
   int currentIndex = 0;
   var currentPage;
 
@@ -64,16 +69,13 @@ class _IndexPageState extends State<IndexPage>
           currentIndex: currentIndex,
         ),
         // body: currentPage,
+
         body: TabBarView(
-          controller: _controller,
-          physics: NeverScrollableScrollPhysics(),
-          children: <Widget>[
-            HomePage(),
-            CategoryPage(),
-            ShoppingPage(),
-            MemberPage()
-          ],
-        ),
+            controller: _controller,
+            physics: NeverScrollableScrollPhysics(),
+            children: pages),
+
+        // body: IndexedStack(index: currentIndex, children: pages),
       ),
     );
   }
