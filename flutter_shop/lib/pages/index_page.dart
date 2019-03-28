@@ -53,9 +53,9 @@ class _IndexPageState extends State<IndexPage>
     return Container(
       child: Scaffold(
         backgroundColor: Colors.black87,
-        appBar: AppBar(
-          title: Text('百姓生活+'),
-        ),
+        // appBar: AppBar(
+        //   title: Text('百姓生活+'),
+        // ),
         bottomNavigationBar: BottomNavigationBar(
           items: items,
           type: BottomNavigationBarType.fixed,

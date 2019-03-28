@@ -51,78 +51,85 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          title: Text('首页'),
+        ),
         body: FutureBuilder(
-      future: getHomePageContent(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          var data = json.decode(snapshot.data.toString());
+          future: getHomePageContent(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var data = json.decode(snapshot.data.toString());
 
-          List<Map> dataList = (data['data']['slides'] as List).cast();
-          List<Map> categoryList = (data['data']['category'] as List).cast();
-          String bannerurl = data['data']['advertesPicture']['PICTURE_ADDRESS'];
-          String leaderPhone = data['data']['shopInfo']['leaderPhone'];
-          String leaderImage = data['data']['shopInfo']['leaderImage'];
-          List<Map> recommendList = (data['data']['recommend'] as List).cast();
-          String floor1title = data['data']['floor1Pic']['PICTURE_ADDRESS'];
-          List<Map> floor1 = (data['data']['floor1'] as List).cast(); //楼层1商品和图片
+              List<Map> dataList = (data['data']['slides'] as List).cast();
+              List<Map> categoryList =
+                  (data['data']['category'] as List).cast();
+              String bannerurl =
+                  data['data']['advertesPicture']['PICTURE_ADDRESS'];
+              String leaderPhone = data['data']['shopInfo']['leaderPhone'];
+              String leaderImage = data['data']['shopInfo']['leaderImage'];
+              List<Map> recommendList =
+                  (data['data']['recommend'] as List).cast();
+              String floor1title = data['data']['floor1Pic']['PICTURE_ADDRESS'];
+              List<Map> floor1 =
+                  (data['data']['floor1'] as List).cast(); //楼层1商品和图片
 
-          return EasyRefresh(
-            refreshFooter: ClassicsFooter(
-              key: _footerKey,
-              bgColor: Colors.white,
-              textColor: Colors.pink,
-              moreInfoColor: Colors.pink,
-              // showMore: true,
-              noMoreText: '',
-              // moreInfo: '上拉加载',
-              loadText: '上拉加载',
-              loadReadyText: 'loading...',
-              loadedText: 'success',
-              isFloat: false,
-              loadingText: 'loading...',
-              // loadHeight: 50.0,
-            ),
-            child: ListView(
-              children: <Widget>[
-                CustomSwiper(
-                  swiperList: dataList,
+              return EasyRefresh(
+                refreshFooter: ClassicsFooter(
+                  key: _footerKey,
+                  bgColor: Colors.white,
+                  textColor: Colors.pink,
+                  moreInfoColor: Colors.pink,
+                  // showMore: true,
+                  noMoreText: '',
+                  // moreInfo: '上拉加载',
+                  loadText: '上拉加载',
+                  loadReadyText: 'loading...',
+                  loadedText: 'success',
+                  isFloat: false,
+                  loadingText: 'loading...',
+                  // loadHeight: 50.0,
                 ),
-                TopNavigator(categorylist: categoryList),
-                AdBanner(banner_url: bannerurl),
-                LeaderPhone(phone: leaderPhone, image: leaderImage),
-                Recommend(
-                  recommendList: recommendList,
+                child: ListView(
+                  children: <Widget>[
+                    CustomSwiper(
+                      swiperList: dataList,
+                    ),
+                    TopNavigator(categorylist: categoryList),
+                    AdBanner(banner_url: bannerurl),
+                    LeaderPhone(phone: leaderPhone, image: leaderImage),
+                    Recommend(
+                      recommendList: recommendList,
+                    ),
+                    FloorTitle(
+                      picture_address: floor1title,
+                    ),
+                    FloorContent(
+                      goodsList: floor1,
+                    ),
+                    _hotGoods(),
+                  ],
                 ),
-                FloorTitle(
-                  picture_address: floor1title,
-                ),
-                FloorContent(
-                  goodsList: floor1,
-                ),
-                _hotGoods(),
-              ],
-            ),
-            loadMore: () async {
-              print('loadmore');
-              var formData = {'page': page};
-              await request('homePageBelowConten', formData: formData)
-                  .then((value) {
-                var data = json.decode(value.toString());
-                List<Map> newGoodList = (data['data'] as List).cast();
-                setState(() {
-                  hotList.addAll(newGoodList);
-                  page++;
-                });
-              });
-            },
-          );
-        } else {
-          return Center(
-            child: Text('加载中...'),
-          );
-        }
-      },
-    ));
+                loadMore: () async {
+                  print('loadmore');
+                  var formData = {'page': page};
+                  await request('homePageBelowConten', formData: formData)
+                      .then((value) {
+                    var data = json.decode(value.toString());
+                    List<Map> newGoodList = (data['data'] as List).cast();
+                    setState(() {
+                      hotList.addAll(newGoodList);
+                      page++;
+                    });
+                  });
+                },
+              );
+            } else {
+              return Center(
+                child: Text('加载中...'),
+              );
+            }
+          },
+        ));
   }
 
   Widget _hotGoodsWrapList() {
