@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import '../config/service_method.dart';
 import '../model/category.dart';
+import '../model/categoryGoodsList.dart';
 import '../provide/child_category.dart';
 import 'package:provide/provide.dart';
 
@@ -29,7 +30,7 @@ class _CategoryPageState extends State<CategoryPage> {
             LeftCategoryNav(),
             Container(
               child: Column(
-                children: <Widget>[RightTopNav()],
+                children: <Widget>[RightTopNav(), CategoryGoodsList()],
               ),
             )
           ],
@@ -77,7 +78,7 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
       });
 
       Provide.value<ChildCategory>(context)
-          .getChildCategory(list[0].bxMallStuDto);
+          .getChildCategory(list[0].bxMallSubDto);
     });
   }
 
@@ -89,7 +90,6 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
         setState(() {
           listIndex = index;
         });
-        //TODO  待续。。。。。。。。
         var childList = list[index].bxMallSubDto;
         Provide.value<ChildCategory>(context).getChildCategory(childList);
       },
@@ -115,8 +115,6 @@ class RightTopNav extends StatefulWidget {
 }
 
 class _RightTopNavState extends State<RightTopNav> {
-  // List cats = ['全部', '二锅头', '杏花村', '舍得', '茅台', '五粮液', '大曲'];
-
   @override
   Widget build(BuildContext context) {
     return Provide<ChildCategory>(
@@ -148,5 +146,101 @@ class _RightTopNavState extends State<RightTopNav> {
             style: TextStyle(fontSize: ScreenUtil().setSp(28))),
       ),
     );
+  }
+}
+
+class CategoryGoodsList extends StatefulWidget {
+  @override
+  _CategoryGoodsListState createState() => _CategoryGoodsListState();
+}
+
+class _CategoryGoodsListState extends State<CategoryGoodsList> {
+  List goodsList = [];
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: ScreenUtil().setWidth(570),
+      height: ScreenUtil().setHeight(1000),
+      child: ListView.builder(
+          itemCount: goodsList.length,
+          itemBuilder: (context, index) {
+            return _goodsItemWidget(index);
+          }),
+    );
+  }
+
+  @override
+  void initState() {
+    _getGoodsList();
+    super.initState();
+  }
+
+  void _getGoodsList() async {
+    var param = {'categoryId': '4', 'CategorySubId': '', 'page': '1'};
+    await request('getMallGoods', formData: param).then((val) {
+      var data = json.decode(val.toString());
+      CategoryGoodsListModel goodsListModel =
+          CategoryGoodsListModel.fromJson(data);
+      setState(() {
+        goodsList = goodsListModel.data;
+      });
+    });
+  }
+
+  Widget _goodsImage(index) {
+    return Container(
+      width: ScreenUtil().setWidth(200),
+      child: Image.network(goodsList[index].image),
+    );
+  }
+
+  Widget _goodsName(index) {
+    return Container(
+      padding: EdgeInsets.all(5.0),
+      width: ScreenUtil().setWidth(370),
+      child: Text(
+        goodsList[index].goodsName,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(fontSize: ScreenUtil().setSp(28)),
+      ),
+    );
+  }
+
+  Widget _goodsPrice(index) {
+    return Container(
+        margin: EdgeInsets.only(top: 20),
+        width: ScreenUtil().setWidth(370),
+        child: Row(
+          children: <Widget>[
+            Text(
+              '价格： ￥${goodsList[index].presentPrice}',
+              style: TextStyle(
+                  fontSize: ScreenUtil().setSp(30), color: Colors.pink),
+            ),
+            Text(
+              '￥${goodsList[index].oriPrice}',
+              style: TextStyle(
+                fontSize: ScreenUtil().setSp(26),
+                color: Colors.black26,
+                decoration: TextDecoration.lineThrough,
+              ),
+            )
+          ],
+        ));
+  }
+
+  Widget _goodsItemWidget(index) {
+    return InkWell(
+        child: Container(
+      child: Row(
+        children: <Widget>[
+          _goodsImage(index),
+          Column(
+            children: <Widget>[_goodsName(index), _goodsPrice(index)],
+          )
+        ],
+      ),
+    ));
   }
 }
