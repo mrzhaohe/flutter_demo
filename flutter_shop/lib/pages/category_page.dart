@@ -6,7 +6,10 @@ import 'dart:convert';
 import '../config/service_method.dart';
 import '../model/category.dart';
 import '../model/categoryGoodsList.dart';
+
 import '../provide/child_category.dart';
+import '../provide/categoryGoodsList.dart';
+
 import 'package:provide/provide.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -53,6 +56,7 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
   @override
   void initState() {
     _getCategory();
+    _getGoodsList();
     super.initState();
   }
 
@@ -68,7 +72,8 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
         ));
   }
 
-  _getCategory() async {
+// 获取左侧分类
+  void _getCategory() async {
     await request('getCategory').then((value) {
       var data = json.decode(value.toString());
 
@@ -82,6 +87,22 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
     });
   }
 
+//获取商品
+  void _getGoodsList({String categoryId}) async {
+    var param = {
+      'categoryId': categoryId == null ? '4' : categoryId,
+      'CategorySubId': '',
+      'page': '1'
+    };
+    await request('getMallGoods', formData: param).then((val) {
+      var data = json.decode(val.toString());
+      CategoryGoodsListModel goodsListModel =
+          CategoryGoodsListModel.fromJson(data);
+      Provide.value<CategoryGoodsListProvide>(context)
+          .getGoodsList(goodsListModel.data);
+    });
+  }
+
   Widget _cellInkWell(int index) {
     bool isSelected = false;
     isSelected = (index == listIndex);
@@ -91,6 +112,8 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
           listIndex = index;
         });
         var childList = list[index].bxMallSubDto;
+        var categoryId = list[index].mallCategoryId;
+        _getGoodsList(categoryId: categoryId);
         Provide.value<ChildCategory>(context).getChildCategory(childList);
       },
       child: Container(
@@ -155,51 +178,44 @@ class CategoryGoodsList extends StatefulWidget {
 }
 
 class _CategoryGoodsListState extends State<CategoryGoodsList> {
-  List goodsList = [];
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: ScreenUtil().setWidth(570),
-      height: ScreenUtil().setHeight(1000),
-      child: ListView.builder(
-          itemCount: goodsList.length,
-          itemBuilder: (context, index) {
-            return _goodsItemWidget(index);
-          }),
+    return Provide<CategoryGoodsListProvide>(
+      builder: (context, child, data) {
+        return Expanded(
+            child: Container(
+          width: ScreenUtil().setWidth(570),
+          height: ScreenUtil().setHeight(1000),
+          child: ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: data.goodsList.length,
+            itemBuilder: (context, index) {
+              return _goodsItemWidget(data.goodsList[index]);
+            },
+          ),
+        ));
+      },
     );
   }
 
   @override
   void initState() {
-    _getGoodsList();
     super.initState();
   }
 
-  void _getGoodsList() async {
-    var param = {'categoryId': '4', 'CategorySubId': '', 'page': '1'};
-    await request('getMallGoods', formData: param).then((val) {
-      var data = json.decode(val.toString());
-      CategoryGoodsListModel goodsListModel =
-          CategoryGoodsListModel.fromJson(data);
-      setState(() {
-        goodsList = goodsListModel.data;
-      });
-    });
-  }
-
-  Widget _goodsImage(index) {
+  Widget _goodsImage(CategoryListData goodsItem) {
     return Container(
       width: ScreenUtil().setWidth(200),
-      child: Image.network(goodsList[index].image),
+      child: Image.network(goodsItem.image),
     );
   }
 
-  Widget _goodsName(index) {
+  Widget _goodsName(CategoryListData goodsItem) {
     return Container(
       padding: EdgeInsets.all(5.0),
       width: ScreenUtil().setWidth(370),
       child: Text(
-        goodsList[index].goodsName,
+        goodsItem.goodsName,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(fontSize: ScreenUtil().setSp(28)),
@@ -207,19 +223,19 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
     );
   }
 
-  Widget _goodsPrice(index) {
+  Widget _goodsPrice(CategoryListData goodsItem) {
     return Container(
         margin: EdgeInsets.only(top: 20),
         width: ScreenUtil().setWidth(370),
         child: Row(
           children: <Widget>[
             Text(
-              '价格： ￥${goodsList[index].presentPrice}',
+              '价格： ￥${goodsItem.presentPrice}',
               style: TextStyle(
                   fontSize: ScreenUtil().setSp(30), color: Colors.pink),
             ),
             Text(
-              '￥${goodsList[index].oriPrice}',
+              '￥${goodsItem.oriPrice}',
               style: TextStyle(
                 fontSize: ScreenUtil().setSp(26),
                 color: Colors.black26,
@@ -230,14 +246,15 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
         ));
   }
 
-  Widget _goodsItemWidget(index) {
+  Widget _goodsItemWidget(CategoryListData listData) {
     return InkWell(
         child: Container(
+      width: ScreenUtil().setWidth(570),
       child: Row(
         children: <Widget>[
-          _goodsImage(index),
+          _goodsImage(listData),
           Column(
-            children: <Widget>[_goodsName(index), _goodsPrice(index)],
+            children: <Widget>[_goodsName(listData), _goodsPrice(listData)],
           )
         ],
       ),
