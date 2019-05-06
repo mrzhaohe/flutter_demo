@@ -5,6 +5,8 @@ import '../provide/detail_info.dart';
 import './detail_pages/detail_top_area.dart';
 import './detail_pages/detail_explain.dart';
 import './detail_pages/detail_tabbar.dart';
+import './detail_pages/detail_web.dart';
+import './detail_pages/detail_bottom.dart';
 
 class DetailsPage extends StatelessWidget {
   final String goodsId;
@@ -27,14 +29,22 @@ class DetailsPage extends StatelessWidget {
         future: _getInfo(context),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
-            return Container(
-              child: Column(
-                children: <Widget>[
-                  DetailsTopArea(),
-                  DetailExplain(),
-                  DetailTabBar()
-                ],
-              ),
+            return Stack(
+              children: <Widget>[
+                ListView(
+                  children: <Widget>[
+                    DetailsTopArea(),
+                    DetailExplain(),
+                    DetailTabBar(),
+                    DetailWeb()
+                  ],
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: DetailBottom(),
+                )
+              ],
             );
           } else {
             return Text('loading');
