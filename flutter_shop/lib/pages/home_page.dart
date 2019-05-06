@@ -6,6 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 
+import '../routers/application.dart';
+
 class HomePage extends StatefulWidget {
   final Widget child;
   HomePage({Key key, this.child}) : super(key: key);
@@ -217,9 +219,15 @@ class CustomSwiper extends StatelessWidget {
       child: Swiper(
         itemCount: swiperList.length,
         itemBuilder: (BuildContext context, int index) {
-          return Image.network(
-            '${swiperList[index]['image']}',
-            fit: BoxFit.cover,
+          return InkWell(
+            onTap: () {
+              Application.router.navigateTo(
+                  context, "/detail?id=${swiperList[index]['goodsId']}");
+            },
+            child: Image.network(
+              '${swiperList[index]['image']}',
+              fit: BoxFit.cover,
+            ),
           );
         },
         pagination: SwiperPagination(
@@ -335,24 +343,31 @@ class Recommend extends StatelessWidget {
     );
   }
 
-  Widget _item(index) {
-    return Container(
-      padding: EdgeInsets.all(8.0),
-      height: ScreenUtil().setHeight(330),
-      width: ScreenUtil().setWidth(250),
-      child: Column(
-        children: <Widget>[
-          Image.network(recommendList[index]['image']),
-          Text(
-            '¥${recommendList[index]['price']}',
-            style: TextStyle(
-                decoration: TextDecoration.lineThrough, color: Colors.grey),
-          ),
-          Text('¥${recommendList[index]['mallPrice']}'),
-        ],
+  Widget _item(index, context) {
+    return InkWell(
+      onTap: () {
+        Application.router.navigateTo(
+            context, "/detail?id=${recommendList[index]['goodsId']}");
+      },
+      child: Container(
+        padding: EdgeInsets.all(8.0),
+        height: ScreenUtil().setHeight(330),
+        width: ScreenUtil().setWidth(250),
+        child: Column(
+          children: <Widget>[
+            Image.network(recommendList[index]['image']),
+            Text(
+              '¥${recommendList[index]['price']}',
+              style: TextStyle(
+                  decoration: TextDecoration.lineThrough, color: Colors.grey),
+            ),
+            Text('¥${recommendList[index]['mallPrice']}'),
+          ],
+        ),
+        decoration: BoxDecoration(
+            border:
+                Border(right: BorderSide(width: 0.5, color: Colors.black12))),
       ),
-      decoration: BoxDecoration(
-          border: Border(right: BorderSide(width: 0.5, color: Colors.black12))),
     );
   }
 
@@ -363,7 +378,7 @@ class Recommend extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: recommendList.length,
         itemBuilder: (context, index) {
-          return _item(index);
+          return _item(index, context);
         },
       ),
     );
@@ -406,40 +421,41 @@ class FloorContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Column(
-        children: <Widget>[_firstRow(), _otherRow()],
+        children: <Widget>[_firstRow(context), _otherRow(context)],
       ),
     );
   }
 
-  Widget _firstRow() {
+  Widget _firstRow(context) {
     return Row(
       children: <Widget>[
-        _item(goodsList[0]),
+        _item(goodsList[0], context),
         Column(
           children: <Widget>[
-            _item(goodsList[1]),
-            _item(goodsList[2]),
+            _item(goodsList[1], context),
+            _item(goodsList[2], context),
           ],
         )
       ],
     );
   }
 
-  Widget _otherRow() {
+  Widget _otherRow(context) {
     return Row(
       children: <Widget>[
-        _item(goodsList[3]),
-        _item(goodsList[4]),
+        _item(goodsList[3], context),
+        _item(goodsList[4], context),
       ],
     );
   }
 
-  Widget _item(Map good) {
+  Widget _item(Map good, BuildContext context) {
     return Container(
       width: ScreenUtil().setWidth(375),
       child: InkWell(
         onTap: () {
-          print(good['goodsId']);
+          Application.router
+              .navigateTo(context, "/detail?id=${good['goodsId']}");
         },
         child: Image.network(good['image']),
       ),

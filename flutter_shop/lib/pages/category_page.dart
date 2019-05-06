@@ -7,12 +7,14 @@ import '../config/service_method.dart';
 import '../model/category.dart';
 import '../model/categoryGoodsList.dart';
 
-import '../provide/child_category.dart';
+import '../provide/childcategory.dart';
 import '../provide/categoryGoodsList.dart';
 
 import 'package:provide/provide.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import '../routers/application.dart';
 
 class CategoryPage extends StatefulWidget {
   final Widget child;
@@ -297,21 +299,25 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
 
   Widget _goodsItemWidget(CategoryListData listData) {
     return InkWell(
+        onTap: () {
+          Application.router
+              .navigateTo(context, 'detail?id=${listData.goodsId}');
+        },
         child: Container(
-      padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border:
-              Border(bottom: BorderSide(width: 1.0, color: Colors.black12))),
-      child: Row(
-        children: <Widget>[
-          _goodsImage(listData),
-          Column(
-            children: <Widget>[_goodsName(listData), _goodsPrice(listData)],
-          )
-        ],
-      ),
-    ));
+          padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                  bottom: BorderSide(width: 1.0, color: Colors.black12))),
+          child: Row(
+            children: <Widget>[
+              _goodsImage(listData),
+              Column(
+                children: <Widget>[_goodsName(listData), _goodsPrice(listData)],
+              )
+            ],
+          ),
+        ));
   }
 
   Widget _goodsImage(CategoryListData goodsItem) {
