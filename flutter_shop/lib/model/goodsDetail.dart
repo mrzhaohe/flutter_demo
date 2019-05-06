@@ -1,14 +1,16 @@
-class GoodsDetailModel {
+class DetailsModel {
   String code;
   String message;
-  GoodsDetail data;
+  DetailsGoodsData data;
 
-  GoodsDetailModel({this.code, this.message, this.data});
+  DetailsModel({this.code, this.message, this.data});
 
-  GoodsDetailModel.fromJson(Map<String, dynamic> json) {
+  DetailsModel.fromJson(Map<String, dynamic> json) {
     code = json['code'];
     message = json['message'];
-    data = json['data'] != null ? new GoodsDetail.fromJson(json['data']) : null;
+    data = json['data'] != null
+        ? new DetailsGoodsData.fromJson(json['data'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -22,14 +24,14 @@ class GoodsDetailModel {
   }
 }
 
-class GoodsDetail {
+class DetailsGoodsData {
   GoodInfo goodInfo;
   List<GoodComments> goodComments;
   AdvertesPicture advertesPicture;
 
-  GoodsDetail({this.goodInfo, this.goodComments, this.advertesPicture});
+  DetailsGoodsData({this.goodInfo, this.goodComments, this.advertesPicture});
 
-  GoodsDetail.fromJson(Map<String, dynamic> json) {
+  DetailsGoodsData.fromJson(Map<String, dynamic> json) {
     goodInfo = json['goodInfo'] != null
         ? new GoodInfo.fromJson(json['goodInfo'])
         : null;
@@ -61,7 +63,7 @@ class GoodsDetail {
 
 class GoodInfo {
   String image5;
-  double amount;
+  int amount;
   String image3;
   String image4;
   String goodsId;
