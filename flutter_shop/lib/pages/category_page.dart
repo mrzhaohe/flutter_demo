@@ -153,7 +153,8 @@ class _RightTopNavState extends State<RightTopNav> {
             scrollDirection: Axis.horizontal,
             itemCount: childCategory.childCategoryList.length,
             itemBuilder: (context, index) {
-              return _rightNavItem(childCategory.childCategoryList[index]);
+              return _rightNavItem(
+                  childCategory.childCategoryList[index], index);
             },
           ),
         );
@@ -161,12 +162,23 @@ class _RightTopNavState extends State<RightTopNav> {
     );
   }
 
-  Widget _rightNavItem(BxMallSubDto item) {
+  Widget _rightNavItem(BxMallSubDto item, int index) {
+    bool isSelected = false;
+
+    isSelected = (index == Provide.value<ChildCategory>(context).childIndex)
+        ? true
+        : false;
+
     return InkWell(
+      onTap: () {
+        Provide.value<ChildCategory>(context).changeChildIndex(index);
+      },
       child: Container(
         padding: EdgeInsets.fromLTRB(5.0, 10.0, 5.0, 10.0),
         child: Text(item.mallSubName,
-            style: TextStyle(fontSize: ScreenUtil().setSp(28))),
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(28),
+                color: isSelected ? Colors.pink : Colors.black)),
       ),
     );
   }
@@ -201,6 +213,25 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Widget _goodsItemWidget(CategoryListData listData) {
+    return InkWell(
+        child: Container(
+      padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          border:
+              Border(bottom: BorderSide(width: 1.0, color: Colors.black12))),
+      child: Row(
+        children: <Widget>[
+          _goodsImage(listData),
+          Column(
+            children: <Widget>[_goodsName(listData), _goodsPrice(listData)],
+          )
+        ],
+      ),
+    ));
   }
 
   Widget _goodsImage(CategoryListData goodsItem) {
@@ -244,20 +275,5 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
             )
           ],
         ));
-  }
-
-  Widget _goodsItemWidget(CategoryListData listData) {
-    return InkWell(
-        child: Container(
-      width: ScreenUtil().setWidth(570),
-      child: Row(
-        children: <Widget>[
-          _goodsImage(listData),
-          Column(
-            children: <Widget>[_goodsName(listData), _goodsPrice(listData)],
-          )
-        ],
-      ),
-    ));
   }
 }
