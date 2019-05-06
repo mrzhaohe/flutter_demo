@@ -14,12 +14,12 @@ class ChildCategory with ChangeNotifier {
     childIndex = 0;
     page = 1;
     noMoreText = '';
+    subCategoryId = '';
     BxMallSubDto all = BxMallSubDto();
     all.mallCategoryId = '00';
     all.comments = 'null';
+    all.mallSubId = '';
     all.mallSubName = '全部';
-    all.mallSubId = '00';
-
     childCategoryList = [all];
     childCategoryList.addAll(list);
 

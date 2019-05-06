@@ -12,6 +12,7 @@ import '../provide/categoryGoodsList.dart';
 
 import 'package:provide/provide.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CategoryPage extends StatefulWidget {
   final Widget child;
@@ -271,8 +272,17 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
     request('getMallGoods', formData: param).then((val) {
       var data = json.decode(val.toString());
       CategoryGoodsListModel goodList = CategoryGoodsListModel.fromJson(data);
+
       if (goodList.data == null) {
         Provide.value<ChildCategory>(context).changeNoMoreText('没有更多了');
+        Fluttertoast.showToast(
+            msg: "已经到底了",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.pink,
+            textColor: Colors.white,
+            fontSize: 16.0);
       } else {
         Provide.value<CategoryGoodsListProvide>(context)
             .addGoodsList(goodList.data);
@@ -331,7 +341,7 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
         child: Row(
           children: <Widget>[
             Text(
-              '价格： ￥${goodsItem.presentPrice}',
+              '价格:￥${goodsItem.presentPrice}',
               style: TextStyle(
                   fontSize: ScreenUtil().setSp(30), color: Colors.pink),
             ),
