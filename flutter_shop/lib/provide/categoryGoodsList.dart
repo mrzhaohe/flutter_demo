@@ -1,3 +1,5 @@
+// 商品列表
+
 import 'package:flutter/material.dart';
 
 import '../model/categoryGoodsList.dart';

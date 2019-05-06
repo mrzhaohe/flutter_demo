@@ -1,3 +1,4 @@
+// 商品子类
 import 'package:flutter/material.dart';
 import '../model/category.dart';
 

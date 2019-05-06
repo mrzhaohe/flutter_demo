@@ -1,3 +1,5 @@
+//购物车相关
+
 import 'package:flutter/material.dart';
 import '../model/goodsDetail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
