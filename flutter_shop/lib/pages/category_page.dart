@@ -11,6 +11,7 @@ import '../provide/child_category.dart';
 import '../provide/categoryGoodsList.dart';
 
 import 'package:provide/provide.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 class CategoryPage extends StatefulWidget {
   final Widget child;
@@ -212,28 +213,71 @@ class CategoryGoodsList extends StatefulWidget {
 }
 
 class _CategoryGoodsListState extends State<CategoryGoodsList> {
+  GlobalKey<RefreshFooterState> _footerKey =
+      new GlobalKey<RefreshFooterState>();
+  var scrollController = new ScrollController();
   @override
   Widget build(BuildContext context) {
     return Provide<CategoryGoodsListProvide>(
       builder: (context, child, data) {
+        try {
+          if (Provide.value<ChildCategory>(context).page == 1) {
+            scrollController.jumpTo(0.0);
+          }
+        } catch (e) {}
         if (data.goodsList.length > 0) {
           return Expanded(
               child: Container(
-            width: ScreenUtil().setWidth(570),
-            height: ScreenUtil().setHeight(1000),
-            child: ListView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: data.goodsList.length,
-              itemBuilder: (context, index) {
-                return _goodsItemWidget(data.goodsList[index]);
-              },
-            ),
-          ));
+                  width: ScreenUtil().setWidth(570),
+                  child: EasyRefresh(
+                    refreshFooter: ClassicsFooter(
+                      key: _footerKey,
+                      bgColor: Colors.white,
+                      textColor: Colors.pink,
+                      moreInfoColor: Colors.pink,
+                      showMore: true,
+                      noMoreText:
+                          Provide.value<ChildCategory>(context).noMoreText,
+                      moreInfo: '加载中',
+                      loadReadyText: '上拉加载',
+                    ),
+                    child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: data.goodsList.length,
+                      itemBuilder: (context, index) {
+                        return _goodsItemWidget(data.goodsList[index]);
+                      },
+                    ),
+                    loadMore: () async {
+                      // print('没有更多.....');
+                      _getMoreList();
+                    },
+                  )));
         } else {
           return Text('暂无数据');
         }
       },
     );
+  }
+
+  void _getMoreList() {
+    Provide.value<ChildCategory>(context).addPage();
+    var param = {
+      'categoryId': Provide.value<ChildCategory>(context).categoryId,
+      'categorySubId': Provide.value<ChildCategory>(context).subCategoryId,
+      'page': Provide.value<ChildCategory>(context).page
+    };
+
+    request('getMallGoods', formData: param).then((val) {
+      var data = json.decode(val.toString());
+      CategoryGoodsListModel goodList = CategoryGoodsListModel.fromJson(data);
+      if (goodList.data == null) {
+        Provide.value<ChildCategory>(context).changeNoMoreText('没有更多了');
+      } else {
+        Provide.value<CategoryGoodsListProvide>(context)
+            .addGoodsList(goodList.data);
+      }
+    });
   }
 
   @override
