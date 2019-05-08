@@ -7,6 +7,7 @@ import 'provide/childcategory.dart';
 import 'provide/categoryGoodsList.dart';
 import 'provide/detail_info.dart';
 import 'provide/cart.dart';
+import 'provide/currentIndex.dart';
 
 import './routers/routes.dart';
 import './routers/application.dart';
@@ -16,7 +17,7 @@ void main() {
   var categoryGoodsList = CategoryGoodsListProvide();
   var goodsDetail = GoodsDetailInfoProvide();
   var cartProvide = CartProvide();
-
+  var currentIndex = CurrentIndexProvide();
   var provides = Providers();
 
   provides..provide(Provider<ChildCategory>.value(childCategory));
@@ -24,6 +25,7 @@ void main() {
     ..provide(Provider<CategoryGoodsListProvide>.value(categoryGoodsList));
   provides..provide(Provider<GoodsDetailInfoProvide>.value(goodsDetail));
   provides..provide(Provider<CartProvide>.value(cartProvide));
+  provides..provide(Provider<CurrentIndexProvide>.value(currentIndex));
 
   runApp(ProviderNode(providers: provides, child: MyApp()));
 }

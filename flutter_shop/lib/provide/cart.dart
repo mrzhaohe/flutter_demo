@@ -25,11 +25,17 @@ class CartProvide with ChangeNotifier {
     List<Map> tempList = (temp as List).cast();
     var isHave = false;
     int index = 0;
+    allPrice = 0;
+    allGoodsCount = 0;
     tempList.forEach((item) {
       if (item['goodsId'] == goodsInfo.goodsId) {
         tempList[index]['count'] = item['count'] + 1;
         cartList[index].count++;
         isHave = true;
+      }
+      if (item['isChecked']) {
+        allPrice += item['count'] * item['price'];
+        allGoodsCount += item['count'];
       }
       index++;
     });
@@ -45,10 +51,11 @@ class CartProvide with ChangeNotifier {
       };
       tempList.add(newGoods);
       cartList.add(new CartInfo.fromJson(newGoods));
+      allPrice += (goodsInfo.presentPrice);
+      allGoodsCount += 1;
     }
     cartString = json.encode(tempList).toString();
-    print(cartString);
-    print(cartString.toString());
+
     sp.setString('cartInfo', cartString); //持久化
 
     notifyListeners();
@@ -101,6 +108,8 @@ class CartProvide with ChangeNotifier {
   remove() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     sp.remove('cartInfo');
+    allGoodsCount = 0;
+    allPrice = 0;
     notifyListeners();
   }
 
