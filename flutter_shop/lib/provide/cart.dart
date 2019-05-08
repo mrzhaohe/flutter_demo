@@ -5,9 +5,12 @@ import '../model/goodsDetail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+import '../model/cartInfo.dart';
+
 class CartProvide with ChangeNotifier {
   String cartString;
-  List<Map> tempList;
+
+  List<CartInfo> cartList;
 
   save(GoodInfo goodsInfo) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
@@ -16,24 +19,48 @@ class CartProvide with ChangeNotifier {
 
     var temp = cartString == null ? [] : json.decode(cartString.toString());
     //把获得的值转变为 list
-    tempList = (temp as List).cast();
+    List<Map> tempList = (temp as List).cast();
     var isHave = false;
     int index = 0;
     tempList.forEach((item) {
       if (item['goodsId'] == goodsInfo.goodsId) {
         tempList[index]['count'] = item['count'] + 1;
+        cartList[index].count++;
         isHave = true;
       }
       index++;
     });
 
     if (!isHave) {
-      tempList.add({
+      Map<String, dynamic> newGoods = {
         'goodsId': goodsInfo.goodsId,
         'goodsName': goodsInfo.goodsName,
         'count': 1,
         'price': goodsInfo.presentPrice,
         'images': goodsInfo.image1
+      };
+      tempList.add(newGoods);
+      cartList.add(new CartInfo.fromJson(newGoods));
+    }
+    cartString = json.encode(tempList).toString();
+    print(cartString);
+    print(cartString.toString());
+    sp.setString('cartInfo', cartString); //持久化
+
+    notifyListeners();
+  }
+
+  getCardInfo() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    cartString = sp.getString('cartInfo');
+
+    cartList = [];
+    if (cartString == null) {
+      cartList = [];
+    } else {
+      List<Map> tempList = (json.decode(cartString.toString()) as List).cast();
+      tempList.forEach((item) {
+        cartList.add((new CartInfo.fromJson(item)));
       });
     }
     notifyListeners();

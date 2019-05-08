@@ -4,6 +4,8 @@ import '../../provide/cart.dart';
 import 'package:provide/provide.dart';
 import '../../model/goodsDetail.dart';
 
+import '../../provide/detail_info.dart';
+
 class DetailBottom extends StatelessWidget {
   const DetailBottom({Key key}) : super(key: key);
 
@@ -29,7 +31,11 @@ class DetailBottom extends StatelessWidget {
           )),
           InkWell(
             onTap: () {
-              var goodsInfo = Provide.value<DetailsGoodsData>(context).goodInfo;
+              var goodsInfo = Provide.value<GoodsDetailInfoProvide>(context)
+                  .goodsModel
+                  .data
+                  .goodInfo;
+              print(goodsInfo.goodsName);
               Provide.value<CartProvide>(context).save(goodsInfo);
             },
             child: Container(
