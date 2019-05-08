@@ -13,6 +13,7 @@ class CartProvide with ChangeNotifier {
   List<CartInfo> cartList;
   int allGoodsCount = 0;
   double allPrice = 0;
+  bool isAllChecked = true;
 
   save(GoodInfo goodsInfo) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
@@ -64,12 +65,15 @@ class CartProvide with ChangeNotifier {
       List<Map> tempList = (json.decode(cartString.toString()) as List).cast();
       allGoodsCount = 0;
       allPrice = 0;
+      isAllChecked = true;
       tempList.forEach((item) {
         cartList.add((new CartInfo.fromJson(item)));
 
         if (item['isChecked']) {
           allPrice += item['count'] * item['price'];
           allGoodsCount += item['count'];
+        } else {
+          isAllChecked = false;
         }
       });
     }
@@ -98,5 +102,70 @@ class CartProvide with ChangeNotifier {
     SharedPreferences sp = await SharedPreferences.getInstance();
     sp.remove('cartInfo');
     notifyListeners();
+  }
+
+  changeGoodsSelectState(CartInfo cartInfo) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+
+    cartString = sp.getString('cartInfo');
+    List<Map> savedList = (json.decode(cartString.toString()) as List).cast();
+
+    int tempIndex = 0;
+
+    int index = 0;
+    savedList.forEach((item) {
+      if (item['goodsId'] == cartInfo.goodsId) {
+        tempIndex = index;
+      }
+      index++;
+    });
+
+    savedList[tempIndex] = cartInfo.toJson();
+    cartString = json.encode(savedList).toString();
+    sp.setString('cartInfo', cartString);
+    await getCardInfo();
+  }
+
+  changeAllSelectedState(bool isSelected) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    cartString = sp.getString('cartInfo');
+
+    List<Map> savedList = (json.decode(cartString.toString()) as List).cast();
+    List<Map> tempList = [];
+
+    savedList.forEach((item) {
+      var newItem = item;
+      newItem['isChecked'] = isSelected;
+      tempList.add(newItem);
+    });
+
+    cartString = json.encode(tempList).toString();
+    sp.setString('cartInfo', cartString);
+
+    await getCardInfo();
+  }
+
+  reduceOrAddGoodsCount(CartInfo cartItem, String todo) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    cartString = sp.getString('cartInfo');
+
+    List<Map> tempList = (json.decode(cartString.toString()) as List).cast();
+    int tempIndex = 0;
+    int changeIndex = 0;
+    tempList.forEach((item) {
+      if (item['goodsId'] == cartItem.goodsId) {
+        changeIndex = tempIndex;
+      }
+      tempIndex++;
+    });
+    if (todo == 'add') {
+      cartItem.count++;
+    } else if (cartItem.count > 1) {
+      cartItem.count--;
+    }
+    tempList[changeIndex] = cartItem.toJson();
+    cartString = json.encode(tempList).toString();
+    sp.setString('cartInfo', cartString); //
+    await getCardInfo();
   }
 }

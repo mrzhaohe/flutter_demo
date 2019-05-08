@@ -14,32 +14,38 @@ class CartItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(5, 15, 5, 15),
-      margin: EdgeInsets.fromLTRB(5, 2, 5, 2),
-      decoration: BoxDecoration(
-          border:
-              Border(bottom: BorderSide(width: 1.0, color: Colors.black12))),
-      child: Row(
-        children: <Widget>[
-          _selectedBox(),
-          _goodsImg(),
-          _goodsName(),
-          _goodsPrice(context)
-        ],
-      ),
-    );
+        padding: EdgeInsets.fromLTRB(5, 15, 5, 15),
+        margin: EdgeInsets.fromLTRB(5, 2, 5, 2),
+        decoration: BoxDecoration(
+            border:
+                Border(bottom: BorderSide(width: 1.0, color: Colors.black12))),
+        child: Provide<CartProvide>(
+          builder: (context, child, data) {
+            return Row(
+              children: <Widget>[
+                _selectedBox(context),
+                _goodsImg(),
+                _goodsName(),
+                _goodsPrice(context)
+              ],
+            );
+          },
+        ));
   }
 
-  Widget _selectedBox() {
+  Widget _selectedBox(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(left: 20.0),
       alignment: Alignment.center,
       width: ScreenUtil().setWidth(20),
       child: Checkbox(
         value: cartInfo.isChecked,
-        tristate: true,
+        // tristate: true,
         activeColor: Colors.pink,
-        onChanged: (bool val) {},
+        onChanged: (bool val) {
+          cartInfo.isChecked = val;
+          Provide.value<CartProvide>(context).changeGoodsSelectState(cartInfo);
+        },
       ),
     );
   }
@@ -62,7 +68,7 @@ class CartItem extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Text(cartInfo.goodsName),
-            CartCounter(cartInfo.count),
+            CartCounter(cartInfo),
           ],
         ));
   }

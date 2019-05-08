@@ -15,7 +15,7 @@ class CartBottom extends StatelessWidget {
       child: Provide<CartProvide>(builder: (context, child, data) {
         return Row(
           children: <Widget>[
-            _selectedBox(),
+            _selectedBox(context),
             _desc(),
             _priceItem(context),
             _checkIn(context)
@@ -25,12 +25,15 @@ class CartBottom extends StatelessWidget {
     );
   }
 
-  Widget _selectedBox() {
+  Widget _selectedBox(BuildContext context) {
+    bool isAllSelected = Provide.value<CartProvide>(context).isAllChecked;
     return Container(
       child: Checkbox(
-        value: true,
+        value: isAllSelected,
         activeColor: Colors.pink,
-        onChanged: (bool val) {},
+        onChanged: (bool val) {
+          Provide.value<CartProvide>(context).changeAllSelectedState(val);
+        },
       ),
     );
   }
