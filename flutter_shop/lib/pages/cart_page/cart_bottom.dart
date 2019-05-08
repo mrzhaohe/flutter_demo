@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:provide/provide.dart';
+import '../../provide/cart.dart';
+
 class CartBottom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: ScreenUtil().setWidth(750),
-        height: ScreenUtil().setHeight(120),
-        // color: Colors.black12,
-        child: Row(
+      width: ScreenUtil().setWidth(750),
+      height: ScreenUtil().setHeight(120),
+      decoration: BoxDecoration(
+          border: Border(top: BorderSide(width: 1.0, color: Colors.black12))),
+      child: Provide<CartProvide>(builder: (context, child, data) {
+        return Row(
           children: <Widget>[
             _selectedBox(),
             _desc(),
-            _priceItem(9.0),
-            _checkIn(3)
+            _priceItem(context),
+            _checkIn(context)
           ],
-        ));
+        );
+      }),
+    );
   }
 
   Widget _selectedBox() {
@@ -34,7 +41,8 @@ class CartBottom extends StatelessWidget {
     );
   }
 
-  Widget _priceItem(double totalprice) {
+  Widget _priceItem(BuildContext context) {
+    double totalprice = Provide.value<CartProvide>(context).allPrice;
     return Container(
         width: ScreenUtil().setWidth(430),
         alignment: Alignment.centerRight,
@@ -73,7 +81,8 @@ class CartBottom extends StatelessWidget {
         ));
   }
 
-  Widget _checkIn(int count) {
+  Widget _checkIn(BuildContext context) {
+    int count = Provide.value<CartProvide>(context).allGoodsCount;
     return Container(
       width: ScreenUtil().setWidth(160),
       height: ScreenUtil().setHeight(80),

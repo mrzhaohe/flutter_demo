@@ -4,8 +4,15 @@ class CartInfo {
   int count;
   double price;
   String images;
+  bool isChecked;
 
-  CartInfo({this.goodsId, this.goodsName, this.count, this.price, this.images});
+  CartInfo(
+      {this.goodsId,
+      this.goodsName,
+      this.count,
+      this.price,
+      this.images,
+      this.isChecked});
 
   CartInfo.fromJson(Map<String, dynamic> json) {
     goodsId = json['goodsId'];
@@ -13,6 +20,7 @@ class CartInfo {
     count = json['count'];
     price = json['price'];
     images = json['images'];
+    isChecked = json['isChecked'];
   }
 
   Map<String, dynamic> toJson() {
@@ -22,6 +30,7 @@ class CartInfo {
     data['count'] = this.count;
     data['price'] = this.price;
     data['images'] = this.images;
+    data['isChecked'] = this.isChecked;
     return data;
   }
 }

@@ -19,14 +19,15 @@ class ShoppingPage extends StatelessWidget {
             if (snapshot.hasData) {
               return Stack(
                 children: <Widget>[
-                  ListView.builder(
-                    itemCount: cartList.length,
-                    itemBuilder: (context, index) {
-                      // return ListTile(
-                      //   title: Text(
-                      //       '${cartList[index].goodsName},${cartList[index].count}'),
-                      // );
-                      return CartItem(cartList[index]);
+                  Provide<CartProvide>(
+                    builder: (context, child, data) {
+                      cartList = Provide.value<CartProvide>(context).cartList;
+                      return ListView.builder(
+                        itemCount: cartList.length,
+                        itemBuilder: (context, index) {
+                          return CartItem(cartList[index]);
+                        },
+                      );
                     },
                   ),
                   Positioned(

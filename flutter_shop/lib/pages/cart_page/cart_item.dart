@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../model/cartInfo.dart';
 
+import 'package:provide/provide.dart';
+import '../../provide/cart.dart';
+
+import 'cart_count.dart';
+
 class CartItem extends StatelessWidget {
   final CartInfo cartInfo;
   CartItem(this.cartInfo);
@@ -19,7 +24,7 @@ class CartItem extends StatelessWidget {
           _selectedBox(),
           _goodsImg(),
           _goodsName(),
-          _goodsPrice()
+          _goodsPrice(context)
         ],
       ),
     );
@@ -31,7 +36,7 @@ class CartItem extends StatelessWidget {
       alignment: Alignment.center,
       width: ScreenUtil().setWidth(20),
       child: Checkbox(
-        value: true,
+        value: cartInfo.isChecked,
         tristate: true,
         activeColor: Colors.pink,
         onChanged: (bool val) {},
@@ -53,15 +58,16 @@ class CartItem extends StatelessWidget {
     return Container(
         width: ScreenUtil().setWidth(300),
         alignment: Alignment.topLeft,
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.all(5),
         child: Column(
           children: <Widget>[
             Text(cartInfo.goodsName),
+            CartCounter(cartInfo.count),
           ],
         ));
   }
 
-  Widget _goodsPrice() {
+  Widget _goodsPrice(context) {
     return Container(
       width: ScreenUtil().setWidth(150),
       alignment: Alignment.centerRight,
@@ -70,7 +76,10 @@ class CartItem extends StatelessWidget {
           Text('￥${cartInfo.price}'),
           Container(
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Provide.value<CartProvide>(context)
+                    .deleteGoodsById(cartInfo.goodsId);
+              },
               child:
                   Icon(Icons.delete_forever, color: Colors.black26, size: 30),
             ),

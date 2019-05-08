@@ -11,6 +11,8 @@ class CartProvide with ChangeNotifier {
   String cartString;
 
   List<CartInfo> cartList;
+  int allGoodsCount = 0;
+  double allPrice = 0;
 
   save(GoodInfo goodsInfo) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
@@ -37,7 +39,8 @@ class CartProvide with ChangeNotifier {
         'goodsName': goodsInfo.goodsName,
         'count': 1,
         'price': goodsInfo.presentPrice,
-        'images': goodsInfo.image1
+        'images': goodsInfo.image1,
+        'isChecked': true
       };
       tempList.add(newGoods);
       cartList.add(new CartInfo.fromJson(newGoods));
@@ -59,11 +62,36 @@ class CartProvide with ChangeNotifier {
       cartList = [];
     } else {
       List<Map> tempList = (json.decode(cartString.toString()) as List).cast();
+      allGoodsCount = 0;
+      allPrice = 0;
       tempList.forEach((item) {
         cartList.add((new CartInfo.fromJson(item)));
+
+        if (item['isChecked']) {
+          allPrice += item['count'] * item['price'];
+          allGoodsCount += item['count'];
+        }
       });
     }
     notifyListeners();
+  }
+
+  deleteGoodsById(String goodsId) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    cartString = sp.getString('cartInfo');
+    List<Map> savedList = (json.decode(cartString.toString()) as List).cast();
+
+    List<Map> tempList = [];
+    tempList.addAll(savedList);
+    savedList.forEach((item) {
+      if (item['goodsId'] == goodsId) {
+        tempList.remove(item);
+      }
+    });
+    savedList = tempList;
+    cartString = json.encode(savedList).toString();
+    sp.setString('cartInfo', cartString);
+    await getCardInfo();
   }
 
   remove() async {
