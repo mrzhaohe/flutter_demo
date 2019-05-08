@@ -115,6 +115,7 @@ class IndexPage extends StatelessWidget {
             Provide.value<CurrentIndexProvide>(context).currentIndex;
 
         return Scaffold(
+            backgroundColor: Colors.black12,
             bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               currentIndex: currentIndex,

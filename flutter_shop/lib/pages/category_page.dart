@@ -124,10 +124,11 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
         height: ScreenUtil().setHeight(100),
         padding: EdgeInsets.only(left: 10, top: 20),
         decoration: BoxDecoration(
-            color:
-                isSelected ? Color.fromRGBO(245, 245, 245, 1.0) : Colors.white,
-            border:
-                Border(bottom: BorderSide(width: 1, color: Colors.black12))),
+          color: isSelected ? Color.fromRGBO(245, 245, 245, 1.0) : Colors.white,
+          border: Border(
+              bottom: BorderSide(width: 1, color: Colors.black12),
+              right: BorderSide(width: 1, color: Colors.black12)),
+        ),
         child: Text(
           list[index].mallCategoryName,
           style: TextStyle(fontSize: ScreenUtil().setSp(26)),
